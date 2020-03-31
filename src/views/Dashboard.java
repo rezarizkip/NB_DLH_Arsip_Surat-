@@ -1,7 +1,8 @@
 package views;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridBagLayout;
+import java.awt.SystemColor;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Random;
@@ -9,6 +10,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
 
 /**
  *
@@ -16,10 +22,9 @@ import javax.swing.JPanel;
  */
 public class Dashboard extends javax.swing.JFrame {
     
-    GridBagLayout layout = new GridBagLayout();
     private final String paramNama, welcome;
-    int mouseX, mouseY;
-    Color ctPengguna, ctDisposisi, ctMasuk, ctKeluar;
+    int mouseX, mouseY, pengguna, sMasuk, sKeluar;
+    Color ctPengguna, ctMasuk, ctKeluar;
 
     /**
      * Creates new form Daftar
@@ -33,9 +38,10 @@ public class Dashboard extends javax.swing.JFrame {
         lblWelcome.setText(welcome);
         paddingButton();
         setTitle("Beranda");
-        randomTotal();
+        getRandomTotal();
+        setRandomTotal();
+        setChart();
         ctPengguna = ppPengguna.getBackground();
-        ctDisposisi = ppDisposisi.getBackground();
         ctMasuk = ppSMasuk.getBackground();
         ctKeluar = ppSKeluar.getBackground();
     }
@@ -60,8 +66,74 @@ public class Dashboard extends javax.swing.JFrame {
         }
     }
     
+    public int nomorRandom(int low, int high) {
+        Random r = new Random();
+        int result = r.nextInt(high-low) + low;
+        
+        return result;
+    }
+    
+    public void setRandomTotal() {
+        totalPengguna.setText(String.valueOf(pengguna));
+        totalSuratMasuk.setText(String.valueOf(sMasuk));
+        totalSuratKeluar.setText(String.valueOf(sKeluar));
+    }
+    
+    public void getRandomTotal() {
+        pengguna = nomorRandom(1, 1000);
+        sMasuk = nomorRandom(1, 1000);
+        sKeluar = nomorRandom(1, 1000);
+    }
+    
+    public void setChart() {
+        
+        String judul = "Statistik";
+        
+        // BAR CHART
+        /*
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+         
+            dataset.setValue(pengguna, "Total User", "Pengguna");
+            dataset.setValue(sMasuk, "Surat Masuk", "Surat Masuk");
+            dataset.setValue(sKeluar, "Surat Keluar", "Surat Keluar");
+
+            JFreeChart chart = ChartFactory.createBarChart(judul, "Keterangan", "Total", dataset);
+        
+            CategoryPlot cPlot = (CategoryPlot)chart.getPlot();
+            ((BarRenderer)cPlot.getRenderer()).setBarPainter(new StandardBarPainter()); // set bar chart color
+
+            BarRenderer r = (BarRenderer)chart.getCategoryPlot().getRenderer();
+            r.setSeriesPaint(0, new java.awt.Color(66,165,245));
+            r.setSeriesPaint(1, new java.awt.Color(239,154,154));
+            r.setSeriesPaint(2, new java.awt.Color(255,167,38));
+        */
+        
+        // PIE CHART
+        
+            DefaultPieDataset dataset = new DefaultPieDataset();
+
+            dataset.setValue("Total Pengguna : " + pengguna, pengguna);
+            dataset.setValue("Surat Masuk : " + sMasuk, sMasuk);
+            dataset.setValue("Surat Keluar : " + sKeluar, sKeluar);
+
+            JFreeChart chart = ChartFactory.createPieChart(judul, dataset, true, true, false );
+            
+            PiePlot cPlot = (PiePlot)chart.getPlot();
+            cPlot.setSectionPaint(0, new java.awt.Color(244, 143, 177));
+            cPlot.setSectionPaint(1, new java.awt.Color(255, 204, 128));
+            cPlot.setSectionPaint(2, new java.awt.Color(197, 225, 165));
+            
+        cPlot.setBackgroundPaint(SystemColor.inactiveCaption); // change background color
+        ppStatistik.setLayout(new java.awt.BorderLayout());
+        ChartPanel CP = new ChartPanel(chart);
+        ppStatistik.add(CP, BorderLayout.CENTER);
+        ppStatistik.validate();
+        
+        
+    }
+    
     public void setPaddingButton(JButton button) {
-        button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.CYAN, 5), BorderFactory.createEmptyBorder(0, 20, 0, 0)));
+        button.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
     }
     
     public void paddingButton() {
@@ -84,29 +156,13 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     public void enteredPanel(JPanel panel) {
-        panel.setBackground(new java.awt.Color(255,255,255));
+        panel.setBackground(new java.awt.Color(128, 203, 196));
         panel.setOpaque(true);
     }
     
     public void exitedPanel(JPanel panel, Color color) {
         panel.setBackground(color);
         panel.setOpaque(true);
-    }
-    
-    public int nomorRandom(int low, int high) {
-        Random r = new Random();
-        int result = r.nextInt(high-low) + low;
-        
-        return result;
-    }
-    
-    public void randomTotal() {
-        totalInstansi.setText(String.valueOf(nomorRandom(1, 1000)));
-//        totalPengguna.setText(String.valueOf(nomorRandom(1, 1000)));
-//        totalBackup.setText(String.valueOf(nomorRandom(1, 1000)));
-//        totalSuratMasuk.setText(String.valueOf(nomorRandom(1, 1000)));
-//        totalSuratKeluar.setText(String.valueOf(nomorRandom(1, 1000)));
-//        totalRekapan.setText(String.valueOf(nomorRandom(1, 1000)));
     }
     
     /**
@@ -132,14 +188,19 @@ public class Dashboard extends javax.swing.JFrame {
         panelMain = new javax.swing.JPanel();
         panelBeranda = new javax.swing.JPanel();
         ppPengguna = new javax.swing.JPanel();
-        totalInstansi = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        lblTotalPengguna = new javax.swing.JLabel();
+        totalPengguna = new javax.swing.JLabel();
+        icPengguna = new javax.swing.JLabel();
         ppSMasuk = new javax.swing.JPanel();
-        ppDisposisi = new javax.swing.JPanel();
+        lblTotalSuratMasuk = new javax.swing.JLabel();
+        totalSuratMasuk = new javax.swing.JLabel();
+        icSuratMasuk = new javax.swing.JLabel();
         ppSKeluar = new javax.swing.JPanel();
+        lblTotalSuratKeluar = new javax.swing.JLabel();
+        totalSuratKeluar = new javax.swing.JLabel();
+        icSuratKeluar = new javax.swing.JLabel();
+        ppStatistik = new javax.swing.JPanel();
         panelSuratMasuk = new javax.swing.JPanel();
-        lblSuratMasuk = new javax.swing.JLabel();
         panelSuratKeluar = new javax.swing.JPanel();
         lblSuratKeluar = new javax.swing.JLabel();
         panelRekap = new javax.swing.JPanel();
@@ -156,26 +217,26 @@ public class Dashboard extends javax.swing.JFrame {
 
         lblWelcome.setFont(new java.awt.Font("SF Pro Display", 0, 12)); // NOI18N
         lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblWelcome.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bgWelcome.png"))); // NOI18N
+        lblWelcome.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bg_welcome.png"))); // NOI18N
         lblWelcome.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         lblWelcome.setIconTextGap(0);
         lblWelcome.setOpaque(true);
-        bodyPanel.add(lblWelcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 10, 580, 30));
+        bodyPanel.add(lblWelcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 730, 30));
 
         panelMenu.setBackground(new java.awt.Color(0, 77, 64));
         panelMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         sp2.setBackground(new java.awt.Color(153, 153, 153));
         sp2.setForeground(new java.awt.Color(153, 153, 153));
-        panelMenu.add(sp2, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 130, 290, 5));
+        panelMenu.add(sp2, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 130, 240, 5));
 
         lblDinas.setFont(new java.awt.Font("SF Pro Display", 0, 12)); // NOI18N
         lblDinas.setForeground(new java.awt.Color(255, 255, 255));
         lblDinas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDinas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/logo_small.png"))); // NOI18N
         lblDinas.setText("<html>\nSistem Informasi<br>\nAdministrasi Surat<br>\n<b>Dinas Lingkungan Hidup</b><br>\nKabupaten Bogor\n</html>");
-        lblDinas.setIconTextGap(20);
-        panelMenu.add(lblDinas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 140));
+        lblDinas.setIconTextGap(10);
+        panelMenu.add(lblDinas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 250, 130));
 
         btnBeranda.setBackground(new java.awt.Color(0, 77, 64));
         btnBeranda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -201,7 +262,7 @@ public class Dashboard extends javax.swing.JFrame {
                 btnActionSideMenu(evt);
             }
         });
-        panelMenu.add(btnBeranda, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 300, 45));
+        panelMenu.add(btnBeranda, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 250, 45));
 
         btnSuratMasuk.setBackground(new java.awt.Color(0, 77, 64));
         btnSuratMasuk.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -227,7 +288,7 @@ public class Dashboard extends javax.swing.JFrame {
                 btnActionSideMenu(evt);
             }
         });
-        panelMenu.add(btnSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 185, 300, 45));
+        panelMenu.add(btnSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 185, 250, 45));
 
         btnSuratKeluar.setBackground(new java.awt.Color(0, 77, 64));
         btnSuratKeluar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -253,7 +314,7 @@ public class Dashboard extends javax.swing.JFrame {
                 btnActionSideMenu(evt);
             }
         });
-        panelMenu.add(btnSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 300, 45));
+        panelMenu.add(btnSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 250, 45));
 
         btnRekap.setBackground(new java.awt.Color(0, 77, 64));
         btnRekap.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -279,7 +340,7 @@ public class Dashboard extends javax.swing.JFrame {
                 btnActionSideMenu(evt);
             }
         });
-        panelMenu.add(btnRekap, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 275, 300, 45));
+        panelMenu.add(btnRekap, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 275, 250, 45));
 
         btnInstansi.setBackground(new java.awt.Color(0, 77, 64));
         btnInstansi.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -305,7 +366,7 @@ public class Dashboard extends javax.swing.JFrame {
                 btnActionSideMenu(evt);
             }
         });
-        panelMenu.add(btnInstansi, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 320, 300, 45));
+        panelMenu.add(btnInstansi, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 320, 250, 45));
 
         btnKeluar.setBackground(new java.awt.Color(0, 77, 64));
         btnKeluar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -331,15 +392,15 @@ public class Dashboard extends javax.swing.JFrame {
                 btnActionSideMenu(evt);
             }
         });
-        panelMenu.add(btnKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 505, 300, 45));
+        panelMenu.add(btnKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 505, 250, 45));
 
-        bodyPanel.add(panelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 550));
+        bodyPanel.add(panelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 250, 550));
 
         panelMain.setLayout(new java.awt.CardLayout());
 
         panelBeranda.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        ppPengguna.setBackground(new java.awt.Color(66, 165, 245));
+        ppPengguna.setBackground(new java.awt.Color(244, 143, 177));
         ppPengguna.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED, java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppPengguna.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         ppPengguna.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -352,28 +413,33 @@ public class Dashboard extends javax.swing.JFrame {
         });
         ppPengguna.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        totalInstansi.setBackground(new java.awt.Color(255, 255, 255));
-        totalInstansi.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
-        totalInstansi.setForeground(new java.awt.Color(255, 255, 255));
-        totalInstansi.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        totalInstansi.setText("5");
-        ppPengguna.add(totalInstansi, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 35, -1, -1));
+        lblTotalPengguna.setBackground(new java.awt.Color(255, 255, 255));
+        lblTotalPengguna.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
+        lblTotalPengguna.setForeground(new java.awt.Color(255, 255, 255));
+        lblTotalPengguna.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalPengguna.setText("TOTAL PENGGUNA");
+        lblTotalPengguna.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        lblTotalPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppPengguna.add(lblTotalPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 118, 45));
 
-        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel2.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel2.setText("TOTAL USER");
-        ppPengguna.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+        totalPengguna.setBackground(new java.awt.Color(255, 255, 255));
+        totalPengguna.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
+        totalPengguna.setForeground(new java.awt.Color(255, 255, 255));
+        totalPengguna.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalPengguna.setText("5");
+        totalPengguna.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        totalPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppPengguna.add(totalPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 118, 45));
 
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Secured_Letter_40px.png"))); // NOI18N
-        ppPengguna.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, 60, 80));
+        icPengguna.setForeground(new java.awt.Color(255, 255, 255));
+        icPengguna.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        icPengguna.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Person_48px_2.png"))); // NOI18N
+        icPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppPengguna.add(icPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 0, 118, 100));
 
-        panelBeranda.add(ppPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 285, 100));
+        panelBeranda.add(ppPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 236, 100));
 
-        ppSMasuk.setBackground(new java.awt.Color(239, 154, 154));
+        ppSMasuk.setBackground(new java.awt.Color(255, 204, 128));
         ppSMasuk.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppSMasuk.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         ppSMasuk.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -385,23 +451,34 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
         ppSMasuk.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        panelBeranda.add(ppSMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 285, 100));
 
-        ppDisposisi.setBackground(new java.awt.Color(156, 204, 101));
-        ppDisposisi.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED, java.awt.Color.lightGray, java.awt.Color.lightGray));
-        ppDisposisi.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        ppDisposisi.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        ppDisposisi.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        panelBeranda.add(ppDisposisi, new org.netbeans.lib.awtextra.AbsoluteConstraints(295, 0, 285, 100));
+        lblTotalSuratMasuk.setBackground(new java.awt.Color(255, 255, 255));
+        lblTotalSuratMasuk.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
+        lblTotalSuratMasuk.setForeground(new java.awt.Color(255, 255, 255));
+        lblTotalSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalSuratMasuk.setText("SURAT MASUK");
+        lblTotalSuratMasuk.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        lblTotalSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppSMasuk.add(lblTotalSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 118, 45));
 
-        ppSKeluar.setBackground(new java.awt.Color(255, 167, 38));
+        totalSuratMasuk.setBackground(new java.awt.Color(255, 255, 255));
+        totalSuratMasuk.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
+        totalSuratMasuk.setForeground(new java.awt.Color(255, 255, 255));
+        totalSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalSuratMasuk.setText("5");
+        totalSuratMasuk.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        totalSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppSMasuk.add(totalSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 118, 45));
+
+        icSuratMasuk.setForeground(new java.awt.Color(255, 255, 255));
+        icSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        icSuratMasuk.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Gmail_Login_48px.png"))); // NOI18N
+        icSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppSMasuk.add(icSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 0, 118, 100));
+
+        panelBeranda.add(ppSMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(247, 0, 236, 100));
+
+        ppSKeluar.setBackground(new java.awt.Color(197, 225, 165));
         ppSKeluar.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppSKeluar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         ppSKeluar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -413,31 +490,57 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
         ppSKeluar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        panelBeranda.add(ppSKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(295, 110, 285, 100));
+
+        lblTotalSuratKeluar.setBackground(new java.awt.Color(255, 255, 255));
+        lblTotalSuratKeluar.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
+        lblTotalSuratKeluar.setForeground(new java.awt.Color(255, 255, 255));
+        lblTotalSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalSuratKeluar.setText("SURAT KELUAR");
+        lblTotalSuratKeluar.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        lblTotalSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppSKeluar.add(lblTotalSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 118, 45));
+
+        totalSuratKeluar.setBackground(new java.awt.Color(255, 255, 255));
+        totalSuratKeluar.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
+        totalSuratKeluar.setForeground(new java.awt.Color(255, 255, 255));
+        totalSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalSuratKeluar.setText("5");
+        totalSuratKeluar.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        totalSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppSKeluar.add(totalSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 118, 45));
+
+        icSuratKeluar.setForeground(new java.awt.Color(255, 255, 255));
+        icSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        icSuratKeluar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Feedback_48px.png"))); // NOI18N
+        icSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ppSKeluar.add(icSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 0, 118, 100));
+
+        panelBeranda.add(ppSKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(494, 0, 236, 100));
+
+        javax.swing.GroupLayout ppStatistikLayout = new javax.swing.GroupLayout(ppStatistik);
+        ppStatistik.setLayout(ppStatistikLayout);
+        ppStatistikLayout.setHorizontalGroup(
+            ppStatistikLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 710, Short.MAX_VALUE)
+        );
+        ppStatistikLayout.setVerticalGroup(
+            ppStatistikLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 370, Short.MAX_VALUE)
+        );
+
+        panelBeranda.add(ppStatistik, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 710, 370));
 
         panelMain.add(panelBeranda, "card2");
-
-        lblSuratMasuk.setText("Surat Masuk");
 
         javax.swing.GroupLayout panelSuratMasukLayout = new javax.swing.GroupLayout(panelSuratMasuk);
         panelSuratMasuk.setLayout(panelSuratMasukLayout);
         panelSuratMasukLayout.setHorizontalGroup(
             panelSuratMasukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 580, Short.MAX_VALUE)
-            .addGroup(panelSuratMasukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panelSuratMasukLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(lblSuratMasuk)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 730, Short.MAX_VALUE)
         );
         panelSuratMasukLayout.setVerticalGroup(
             panelSuratMasukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 490, Short.MAX_VALUE)
-            .addGroup(panelSuratMasukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panelSuratMasukLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(lblSuratMasuk)
-                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         panelMain.add(panelSuratMasuk, "card3");
@@ -448,7 +551,7 @@ public class Dashboard extends javax.swing.JFrame {
         panelSuratKeluar.setLayout(panelSuratKeluarLayout);
         panelSuratKeluarLayout.setHorizontalGroup(
             panelSuratKeluarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 580, Short.MAX_VALUE)
+            .addGap(0, 730, Short.MAX_VALUE)
             .addGroup(panelSuratKeluarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panelSuratKeluarLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -473,7 +576,7 @@ public class Dashboard extends javax.swing.JFrame {
         panelRekap.setLayout(panelRekapLayout);
         panelRekapLayout.setHorizontalGroup(
             panelRekapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 580, Short.MAX_VALUE)
+            .addGap(0, 730, Short.MAX_VALUE)
             .addGroup(panelRekapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panelRekapLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -499,9 +602,9 @@ public class Dashboard extends javax.swing.JFrame {
         panelInstansiLayout.setHorizontalGroup(
             panelInstansiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInstansiLayout.createSequentialGroup()
-                .addGap(0, 271, Short.MAX_VALUE)
+                .addGap(0, 346, Short.MAX_VALUE)
                 .addComponent(lblBeranda2)
-                .addGap(0, 271, Short.MAX_VALUE))
+                .addGap(0, 346, Short.MAX_VALUE))
         );
         panelInstansiLayout.setVerticalGroup(
             panelInstansiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -513,13 +616,13 @@ public class Dashboard extends javax.swing.JFrame {
 
         panelMain.add(panelInstansi, "card2");
 
-        bodyPanel.add(panelMain, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 50, 580, 490));
+        bodyPanel.add(panelMain, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, 730, 490));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bodyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(bodyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1000, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -545,8 +648,6 @@ public class Dashboard extends javax.swing.JFrame {
             enteredBtn(btnKeluar);
         } else if (evt.getSource() == ppPengguna) {
             enteredPanel(ppPengguna);
-        } else if (evt.getSource() == ppDisposisi) {
-            enteredPanel(ppDisposisi);
         } else if (evt.getSource() == ppSKeluar) {
             enteredPanel(ppSKeluar);
         } else if (evt.getSource() == ppSMasuk) {
@@ -569,8 +670,6 @@ public class Dashboard extends javax.swing.JFrame {
             exitedBtn(btnKeluar);
         } else if (evt.getSource() == ppPengguna) {
             exitedPanel(ppPengguna, ctPengguna);
-        } else if (evt.getSource() == ppDisposisi) {
-            exitedPanel(ppDisposisi, ctDisposisi);
         } else if (evt.getSource() == ppSKeluar) {
             exitedPanel(ppSKeluar, ctKeluar);
         } else if (evt.getSource() == ppSMasuk) {
@@ -701,13 +800,16 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnRekap;
     private javax.swing.JButton btnSuratKeluar;
     private javax.swing.JButton btnSuratMasuk;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel icPengguna;
+    private javax.swing.JLabel icSuratKeluar;
+    private javax.swing.JLabel icSuratMasuk;
     private javax.swing.JLabel lblBeranda1;
     private javax.swing.JLabel lblBeranda2;
     private javax.swing.JLabel lblDinas;
     private javax.swing.JLabel lblSuratKeluar;
-    private javax.swing.JLabel lblSuratMasuk;
+    private javax.swing.JLabel lblTotalPengguna;
+    private javax.swing.JLabel lblTotalSuratKeluar;
+    private javax.swing.JLabel lblTotalSuratMasuk;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel panelBeranda;
     private javax.swing.JPanel panelInstansi;
@@ -716,12 +818,14 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel panelRekap;
     private javax.swing.JPanel panelSuratKeluar;
     private javax.swing.JPanel panelSuratMasuk;
-    private javax.swing.JPanel ppDisposisi;
     private javax.swing.JPanel ppPengguna;
     private javax.swing.JPanel ppSKeluar;
     private javax.swing.JPanel ppSMasuk;
+    private javax.swing.JPanel ppStatistik;
     private javax.swing.JSeparator sp2;
-    private javax.swing.JLabel totalInstansi;
+    private javax.swing.JLabel totalPengguna;
+    private javax.swing.JLabel totalSuratKeluar;
+    private javax.swing.JLabel totalSuratMasuk;
     // End of variables declaration//GEN-END:variables
 
 }
