@@ -6,7 +6,6 @@
 package views;
 
 import helper.Koneksi;
-import java.awt.Font;
 import helper.TextFieldHintUI;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -25,9 +24,6 @@ import javax.swing.JPasswordField;
  */
 public class Daftar extends javax.swing.JFrame {
     
-    int mouseX, mouseY;
-    private Font secondFont = new Font("Segoe UI", Font.PLAIN, 12);
-
     /**
      * Creates new form Daftar
      */
@@ -58,8 +54,8 @@ public class Daftar extends javax.swing.JFrame {
     }
     
     public void textHint() {
-        inNama.setUI(new TextFieldHintUI("Masukkan nama lengkap", secondFont));
-        inEmail.setUI(new TextFieldHintUI("Masukkan email", secondFont));
+        inNama.setUI(new TextFieldHintUI("Masukkan nama lengkap"));
+        inEmail.setUI(new TextFieldHintUI("Masukkan email"));
     }
     
     public void focusGained(JPasswordField field, String params) {
@@ -115,7 +111,6 @@ public class Daftar extends javax.swing.JFrame {
         sp3 = new javax.swing.JSeparator();
         cbTOS = new javax.swing.JCheckBox();
         btnDaftar = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
         linkMasuk = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -130,7 +125,7 @@ public class Daftar extends javax.swing.JFrame {
         panelLogo.setBackground(new java.awt.Color(0, 150, 136));
         panelLogo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lblSI.setFont(new java.awt.Font("SF Pro Display", 1, 22)); // NOI18N
+        lblSI.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         lblSI.setForeground(new java.awt.Color(255, 255, 255));
         lblSI.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblSI.setText("Sistem  Informasi  Administrasi  Surat");
@@ -140,7 +135,7 @@ public class Daftar extends javax.swing.JFrame {
         Logo1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/logo.png"))); // NOI18N
         panelLogo.add(Logo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(147, 182, 156, 186));
 
-        lblDinas1.setFont(new java.awt.Font("SF Pro Display", 0, 22)); // NOI18N
+        lblDinas1.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         lblDinas1.setForeground(new java.awt.Color(255, 255, 255));
         lblDinas1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDinas1.setText("<html><center>\n<b>Dinas Lingkungan Hidup</b><br>\nKabupaten Bogor\n</center></html>");
@@ -152,43 +147,43 @@ public class Daftar extends javax.swing.JFrame {
         panelBody.setBackground(new java.awt.Color(0, 77, 64));
         panelBody.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lblDaftar.setFont(new java.awt.Font("SF Pro Display", 1, 18)); // NOI18N
+        lblDaftar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblDaftar.setForeground(new java.awt.Color(204, 204, 204));
         lblDaftar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDaftar.setText("DAFTAR");
         panelBody.add(lblDaftar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 450, 30));
 
-        lblNama.setFont(new java.awt.Font("SF Pro Display", 1, 14)); // NOI18N
+        lblNama.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblNama.setForeground(new java.awt.Color(204, 204, 204));
         lblNama.setText("Nama Lengkap");
         panelBody.add(lblNama, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 55, 200, 20));
 
         inNama.setBackground(new java.awt.Color(0, 77, 64));
-        inNama.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        inNama.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         inNama.setForeground(new java.awt.Color(0, 150, 136));
         inNama.setBorder(null);
         panelBody.add(inNama, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 75, 295, 25));
         panelBody.add(sp1, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 100, 300, 5));
 
-        lblEmail.setFont(new java.awt.Font("SF Pro Display", 1, 14)); // NOI18N
+        lblEmail.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblEmail.setForeground(new java.awt.Color(204, 204, 204));
         lblEmail.setText("Email");
         panelBody.add(lblEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 130, 200, 20));
 
         inEmail.setBackground(new java.awt.Color(0, 77, 64));
-        inEmail.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        inEmail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         inEmail.setForeground(new java.awt.Color(0, 150, 136));
         inEmail.setBorder(null);
         panelBody.add(inEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, 295, 25));
         panelBody.add(sp2, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 175, 300, 5));
 
-        lblPass.setFont(new java.awt.Font("SF Pro Display", 1, 14)); // NOI18N
+        lblPass.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblPass.setForeground(new java.awt.Color(204, 204, 204));
         lblPass.setText("Password");
         panelBody.add(lblPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 205, 200, 20));
 
         inPassword.setBackground(new java.awt.Color(0, 77, 64));
-        inPassword.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        inPassword.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         inPassword.setForeground(new java.awt.Color(0, 150, 136));
         inPassword.setText("password");
         inPassword.setBorder(null);
@@ -204,11 +199,11 @@ public class Daftar extends javax.swing.JFrame {
         panelBody.add(sp3, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 250, 300, 5));
 
         cbTOS.setBackground(new java.awt.Color(0, 77, 64));
-        cbTOS.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
+        cbTOS.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         cbTOS.setForeground(new java.awt.Color(204, 204, 204));
         cbTOS.setText("<html> Saya setuju untuk mematuhi Kesepakatan Pengguna<br>dan Pernyataan Privasi. </html>");
         cbTOS.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        cbTOS.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        cbTOS.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         panelBody.add(cbTOS, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 280, 300, -1));
 
         btnDaftar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/btnDaftar.png"))); // NOI18N
@@ -223,21 +218,16 @@ public class Daftar extends javax.swing.JFrame {
         });
         panelBody.add(btnDaftar, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 323, 300, 38));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel3.setText("Sudah memiliki akun?");
-        panelBody.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(147, 375, 115, 15));
-
-        linkMasuk.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         linkMasuk.setForeground(new java.awt.Color(204, 204, 204));
-        linkMasuk.setText("Masuk.");
+        linkMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        linkMasuk.setText("<html>Sudah memiliki akun? <b>Masuk.</b></html>");
         linkMasuk.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         linkMasuk.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 linkMasukMouseClicked(evt);
             }
         });
-        panelBody.add(linkMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(262, 375, 40, 15));
+        panelBody.add(linkMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 375, 450, 15));
 
         panelBG.add(panelBody, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 80, 450, 390));
 
@@ -347,7 +337,6 @@ public class Daftar extends javax.swing.JFrame {
     private javax.swing.JTextField inEmail;
     private javax.swing.JTextField inNama;
     private javax.swing.JPasswordField inPassword;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel lblDaftar;
     private javax.swing.JLabel lblDinas1;
     private javax.swing.JLabel lblEmail;

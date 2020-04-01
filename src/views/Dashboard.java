@@ -116,12 +116,12 @@ public class Dashboard extends javax.swing.JFrame {
             dataset.setValue("Surat Masuk : " + sMasuk, sMasuk);
             dataset.setValue("Surat Keluar : " + sKeluar, sKeluar);
 
-            JFreeChart chart = ChartFactory.createPieChart(judul, dataset, true, true, false );
+            JFreeChart chart = ChartFactory.createPieChart(judul, dataset, true, false, false );
             
             PiePlot cPlot = (PiePlot)chart.getPlot();
-            cPlot.setSectionPaint(0, new java.awt.Color(244, 143, 177));
-            cPlot.setSectionPaint(1, new java.awt.Color(255, 204, 128));
-            cPlot.setSectionPaint(2, new java.awt.Color(197, 225, 165));
+            cPlot.setSectionPaint(0, new java.awt.Color(244, 67, 54));
+            cPlot.setSectionPaint(1, new java.awt.Color(205, 220, 57));
+            cPlot.setSectionPaint(2, new java.awt.Color(76, 175, 80));
             
         cPlot.setBackgroundPaint(SystemColor.inactiveCaption); // change background color
         ppStatistik.setLayout(new java.awt.BorderLayout());
@@ -215,9 +215,10 @@ public class Dashboard extends javax.swing.JFrame {
 
         bodyPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lblWelcome.setFont(new java.awt.Font("SF Pro Display", 0, 12)); // NOI18N
+        lblWelcome.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWelcome.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bg_welcome.png"))); // NOI18N
+        lblWelcome.setText("TEST");
         lblWelcome.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         lblWelcome.setIconTextGap(0);
         lblWelcome.setOpaque(true);
@@ -230,7 +231,6 @@ public class Dashboard extends javax.swing.JFrame {
         sp2.setForeground(new java.awt.Color(153, 153, 153));
         panelMenu.add(sp2, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 130, 240, 5));
 
-        lblDinas.setFont(new java.awt.Font("SF Pro Display", 0, 12)); // NOI18N
         lblDinas.setForeground(new java.awt.Color(255, 255, 255));
         lblDinas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDinas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/logo_small.png"))); // NOI18N
@@ -414,32 +414,32 @@ public class Dashboard extends javax.swing.JFrame {
         ppPengguna.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTotalPengguna.setBackground(new java.awt.Color(255, 255, 255));
-        lblTotalPengguna.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
+        lblTotalPengguna.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblTotalPengguna.setForeground(new java.awt.Color(255, 255, 255));
         lblTotalPengguna.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTotalPengguna.setText("TOTAL PENGGUNA");
+        lblTotalPengguna.setText("TOTAL MEMBER");
         lblTotalPengguna.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblTotalPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppPengguna.add(lblTotalPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 118, 45));
+        ppPengguna.add(lblTotalPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 136, 45));
 
         totalPengguna.setBackground(new java.awt.Color(255, 255, 255));
-        totalPengguna.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
+        totalPengguna.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         totalPengguna.setForeground(new java.awt.Color(255, 255, 255));
         totalPengguna.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalPengguna.setText("5");
         totalPengguna.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         totalPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppPengguna.add(totalPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 118, 45));
+        ppPengguna.add(totalPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 136, 45));
 
         icPengguna.setForeground(new java.awt.Color(255, 255, 255));
         icPengguna.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         icPengguna.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Person_48px_2.png"))); // NOI18N
         icPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppPengguna.add(icPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 0, 118, 100));
+        ppPengguna.add(icPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 0, 100, 100));
 
         panelBeranda.add(ppPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 236, 100));
 
-        ppSMasuk.setBackground(new java.awt.Color(255, 204, 128));
+        ppSMasuk.setBackground(new java.awt.Color(206, 147, 216));
         ppSMasuk.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppSMasuk.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         ppSMasuk.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -453,32 +453,32 @@ public class Dashboard extends javax.swing.JFrame {
         ppSMasuk.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTotalSuratMasuk.setBackground(new java.awt.Color(255, 255, 255));
-        lblTotalSuratMasuk.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
+        lblTotalSuratMasuk.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblTotalSuratMasuk.setForeground(new java.awt.Color(255, 255, 255));
         lblTotalSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTotalSuratMasuk.setText("SURAT MASUK");
         lblTotalSuratMasuk.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblTotalSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppSMasuk.add(lblTotalSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 118, 45));
+        ppSMasuk.add(lblTotalSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 136, 45));
 
         totalSuratMasuk.setBackground(new java.awt.Color(255, 255, 255));
-        totalSuratMasuk.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
+        totalSuratMasuk.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         totalSuratMasuk.setForeground(new java.awt.Color(255, 255, 255));
         totalSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalSuratMasuk.setText("5");
         totalSuratMasuk.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         totalSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppSMasuk.add(totalSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 118, 45));
+        ppSMasuk.add(totalSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 136, 45));
 
         icSuratMasuk.setForeground(new java.awt.Color(255, 255, 255));
         icSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         icSuratMasuk.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Gmail_Login_48px.png"))); // NOI18N
         icSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppSMasuk.add(icSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 0, 118, 100));
+        ppSMasuk.add(icSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 0, 100, 100));
 
         panelBeranda.add(ppSMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(247, 0, 236, 100));
 
-        ppSKeluar.setBackground(new java.awt.Color(197, 225, 165));
+        ppSKeluar.setBackground(new java.awt.Color(179, 157, 219));
         ppSKeluar.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppSKeluar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         ppSKeluar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -492,28 +492,28 @@ public class Dashboard extends javax.swing.JFrame {
         ppSKeluar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTotalSuratKeluar.setBackground(new java.awt.Color(255, 255, 255));
-        lblTotalSuratKeluar.setFont(new java.awt.Font("SF Pro Display", 1, 12)); // NOI18N
+        lblTotalSuratKeluar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblTotalSuratKeluar.setForeground(new java.awt.Color(255, 255, 255));
         lblTotalSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTotalSuratKeluar.setText("SURAT KELUAR");
         lblTotalSuratKeluar.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblTotalSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppSKeluar.add(lblTotalSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 118, 45));
+        ppSKeluar.add(lblTotalSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 136, 45));
 
         totalSuratKeluar.setBackground(new java.awt.Color(255, 255, 255));
-        totalSuratKeluar.setFont(new java.awt.Font("SF Pro Display", 0, 24)); // NOI18N
+        totalSuratKeluar.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         totalSuratKeluar.setForeground(new java.awt.Color(255, 255, 255));
         totalSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalSuratKeluar.setText("5");
         totalSuratKeluar.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         totalSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppSKeluar.add(totalSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 118, 45));
+        ppSKeluar.add(totalSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 55, 136, 45));
 
         icSuratKeluar.setForeground(new java.awt.Color(255, 255, 255));
         icSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         icSuratKeluar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icons8_Feedback_48px.png"))); // NOI18N
         icSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        ppSKeluar.add(icSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 0, 118, 100));
+        ppSKeluar.add(icSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 0, 100, 100));
 
         panelBeranda.add(ppSKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(494, 0, 236, 100));
 
@@ -521,14 +521,14 @@ public class Dashboard extends javax.swing.JFrame {
         ppStatistik.setLayout(ppStatistikLayout);
         ppStatistikLayout.setHorizontalGroup(
             ppStatistikLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 710, Short.MAX_VALUE)
+            .addGap(0, 730, Short.MAX_VALUE)
         );
         ppStatistikLayout.setVerticalGroup(
             ppStatistikLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 370, Short.MAX_VALUE)
+            .addGap(0, 380, Short.MAX_VALUE)
         );
 
-        panelBeranda.add(ppStatistik, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 710, 370));
+        panelBeranda.add(ppStatistik, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 730, 380));
 
         panelMain.add(panelBeranda, "card2");
 

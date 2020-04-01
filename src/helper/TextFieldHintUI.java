@@ -13,9 +13,9 @@ public class TextFieldHintUI extends BasicTextFieldUI implements FocusListener {
     private final Font gainFont;
 //    private Caret position;
 
-    public TextFieldHintUI(String hint, Font gainFont) {
+    public TextFieldHintUI(String hint) {
         this.hint = hint;
-        this.gainFont = gainFont;
+        this.gainFont = new Font("Tahoma", Font.PLAIN, 12);
 //        this.position = position;
     }
 
