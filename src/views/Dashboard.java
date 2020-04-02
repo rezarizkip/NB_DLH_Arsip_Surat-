@@ -1,13 +1,24 @@
 package views;
 
+import helper.Koneksi;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.SystemColor;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
@@ -20,10 +31,11 @@ import org.jfree.data.general.DefaultPieDataset;
  *
  * @author rezarizkip
  */
-public class Dashboard extends javax.swing.JFrame {
+public class Dashboard extends javax.swing.JFrame implements MouseListener {
     
+    private static final long serialVersionUID = 1L;
     private final String paramNama, welcome;
-    int mouseX, mouseY, pengguna, sMasuk, sKeluar;
+    int mouseX, mouseY, nPengguna, nMasuk, nKeluar;
     Color ctPengguna, ctMasuk, ctKeluar;
 
     /**
@@ -36,14 +48,11 @@ public class Dashboard extends javax.swing.JFrame {
         this.paramNama = nama;
         welcome = "<html>Selamat datang <b>" + nama + "</b></html>";
         lblWelcome.setText(welcome);
-        paddingButton();
+        lbInstansi.setText("Dinas Lingkungan Hidup");
+        setPaddingButton();
         setTitle("Beranda");
-        getRandomTotal();
         setRandomTotal();
         setChart();
-        ctPengguna = ppPengguna.getBackground();
-        ctMasuk = ppSMasuk.getBackground();
-        ctKeluar = ppSKeluar.getBackground();
     }
     
     private void initListener() {
@@ -53,6 +62,25 @@ public class Dashboard extends javax.swing.JFrame {
                 doExit();
             }
         });
+        
+        ctPengguna = ppPengguna.getBackground();
+        ctMasuk = ppSMasuk.getBackground();
+        ctKeluar = ppSKeluar.getBackground();
+        
+        btnDashboard.addMouseListener(this);
+        btnSuratMasuk.addMouseListener(this);
+        btnSuratKeluar.addMouseListener(this);
+        btnRekap.addMouseListener(this);
+        btnInstansi.addMouseListener(this);
+        btnKeluar.addMouseListener(this);
+        
+        ppPengguna.addMouseListener(this);
+        ppSMasuk.addMouseListener(this);
+        ppSKeluar.addMouseListener(this);
+        
+        nPengguna = nomorRandom(1, 99);
+        nMasuk = nomorRandom(1, 99);
+        nKeluar = nomorRandom(1, 99);
     }
     
     public void doExit() {
@@ -74,90 +102,111 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     public void setRandomTotal() {
-        totalPengguna.setText(String.valueOf(pengguna));
-        totalSuratMasuk.setText(String.valueOf(sMasuk));
-        totalSuratKeluar.setText(String.valueOf(sKeluar));
+        totalPengguna.setText(String.valueOf(nomorRandom(100, 1000)));
+        totalSuratMasuk.setText(String.valueOf(nomorRandom(100, 1000)));
+        totalSuratKeluar.setText(String.valueOf(nomorRandom(100, 1000)));
     }
     
-    public void getRandomTotal() {
-        pengguna = nomorRandom(1, 1000);
-        sMasuk = nomorRandom(1, 1000);
-        sKeluar = nomorRandom(1, 1000);
+    public String today(Date ys, SimpleDateFormat s) {
+        ys = new Date();
+        s = new SimpleDateFormat("yyyy-MM-dd");
+        String a = s.format(ys);
+        return a;
     }
     
     public void setChart() {
         
-        String judul = "Statistik";
+        String judul = "Laporan hari ini";
+        
+        PreparedStatement ps;
+        ResultSet rs;
+        
+//        String today = tanggal();
+        
+        String query = "SELECT count(*) FROM `pengguna` WHERE `created_at` BETWEEN '2020-03-28 00:00:00' and '2020-03-28 23:59:59'";
+        
+        try {
+            ps = Koneksi.getConnection().prepareStatement(query);
+            
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                int hasil = rs.getInt(1);
+//                int total = Integer.valueOf(hasil);
+                DefaultPieDataset dataSet = new DefaultPieDataset();
+
+                dataSet.setValue("Pengguna baru hari ini: " + hasil, hasil);
+                dataSet.setValue("Masuk hari ini : " + nMasuk, nMasuk);
+                dataSet.setValue("Keluar hari ini : " + nKeluar, nKeluar);
+
+                JFreeChart dataChart = ChartFactory.createPieChart(judul, dataSet, true, false, false );
+
+                dataChart.getPlot().setBackgroundPaint(SystemColor.inactiveCaption); // change background color
+
+                PiePlot cPlot = (PiePlot)dataChart.getPlot();
+                cPlot.setSectionPaint(0, new java.awt.Color(244,143,177));
+                cPlot.setSectionPaint(1, new java.awt.Color(255,204,128));
+                cPlot.setSectionPaint(2, new java.awt.Color(188,170,164));
+
+                panelLaporanHarian.setLayout(new java.awt.BorderLayout());
+                ChartPanel cp = new ChartPanel(dataChart);
+                panelLaporanHarian.add(cp, BorderLayout.CENTER);
+                panelLaporanHarian.validate();
+            } else {
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Masuk.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         // BAR CHART
         /*
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
          
-            dataset.setValue(pengguna, "Total User", "Pengguna");
-            dataset.setValue(sMasuk, "Surat Masuk", "Surat Masuk");
-            dataset.setValue(sKeluar, "Surat Keluar", "Surat Keluar");
+            dataSet.setValue(nomorRandom(1, 99), "Pengguna", "Pengguna baru");
+            dataSet.setValue(nomorRandom(1, 99), "Surat Masuk", "Surat Masuk");
+            dataSet.setValue(nomorRandom(1, 99), "Surat Keluar", "Surat Keluar");
 
-            JFreeChart chart = ChartFactory.createBarChart(judul, "Keterangan", "Total", dataset);
+            JFreeChart dataChart = ChartFactory.createBarChart(judul, "", "", dataSet);
         
-            CategoryPlot cPlot = (CategoryPlot)chart.getPlot();
-            ((BarRenderer)cPlot.getRenderer()).setBarPainter(new StandardBarPainter()); // set bar chart color
+            dataChart.getPlot().setBackgroundPaint(SystemColor.inactiveCaption); // change background color
 
-            BarRenderer r = (BarRenderer)chart.getCategoryPlot().getRenderer();
-            r.setSeriesPaint(0, new java.awt.Color(66,165,245));
-            r.setSeriesPaint(1, new java.awt.Color(239,154,154));
-            r.setSeriesPaint(2, new java.awt.Color(255,167,38));
+            BarRenderer renderer = (BarRenderer)dataChart.getCategoryPlot().getRenderer();
+            renderer.setSeriesPaint(0, new java.awt.Color(244,143,177));
+            renderer.setSeriesPaint(1, new java.awt.Color(255,204,128));
+            renderer.setSeriesPaint(2, new java.awt.Color(188,170,164));
         */
         
         // PIE CHART
         
-            DefaultPieDataset dataset = new DefaultPieDataset();
-
-            dataset.setValue("Total Pengguna : " + pengguna, pengguna);
-            dataset.setValue("Surat Masuk : " + sMasuk, sMasuk);
-            dataset.setValue("Surat Keluar : " + sKeluar, sKeluar);
-
-            JFreeChart chart = ChartFactory.createPieChart(judul, dataset, true, false, false );
-            
-            PiePlot cPlot = (PiePlot)chart.getPlot();
-            cPlot.setSectionPaint(0, new java.awt.Color(244, 67, 54));
-            cPlot.setSectionPaint(1, new java.awt.Color(205, 220, 57));
-            cPlot.setSectionPaint(2, new java.awt.Color(76, 175, 80));
-            
-        cPlot.setBackgroundPaint(SystemColor.inactiveCaption); // change background color
-        ppStatistik.setLayout(new java.awt.BorderLayout());
-        ChartPanel CP = new ChartPanel(chart);
-        ppStatistik.add(CP, BorderLayout.CENTER);
-        ppStatistik.validate();
-        
-        
+//            DefaultPieDataset dataSet = new DefaultPieDataset();
+//
+//            dataSet.setValue("Pengguna baru hari ini: " + 0, 0);
+//            dataSet.setValue("Masuk hari ini : " + nMasuk, nMasuk);
+//            dataSet.setValue("Keluar hari ini : " + nKeluar, nKeluar);
+//
+//            JFreeChart dataChart = ChartFactory.createPieChart(judul, dataSet, true, false, false );
+//            
+//            dataChart.getPlot().setBackgroundPaint(SystemColor.inactiveCaption); // change background color
+//            
+//            PiePlot cPlot = (PiePlot)dataChart.getPlot();
+//            cPlot.setSectionPaint(0, new java.awt.Color(244,143,177));
+//            cPlot.setSectionPaint(1, new java.awt.Color(255,204,128));
+//            cPlot.setSectionPaint(2, new java.awt.Color(188,170,164));
+//        
+//        panelLaporanHarian.setLayout(new java.awt.BorderLayout());
+//        ChartPanel cp = new ChartPanel(dataChart);
+//        panelLaporanHarian.add(cp, BorderLayout.CENTER);
+//        panelLaporanHarian.validate();
     }
     
-    public void setPaddingButton(JButton button) {
-        button.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-    }
-    
-    public void paddingButton() {
-        setPaddingButton(btnBeranda);
-        setPaddingButton(btnSuratMasuk);
-        setPaddingButton(btnKeluar);
-        setPaddingButton(btnSuratKeluar);
-        setPaddingButton(btnRekap);
-        setPaddingButton(btnInstansi);
-    }
-    
-    public void enteredBtn(JButton button) {
-        button.setBackground(new java.awt.Color(0,150,136));
-        button.setOpaque(true);
-    }
-    
-    public void exitedBtn(JButton button) {
-        button.setBackground(new java.awt.Color(0,77,64));
-        button.setOpaque(true);
-    }
-    
-    public void enteredPanel(JPanel panel) {
-        panel.setBackground(new java.awt.Color(128, 203, 196));
-        panel.setOpaque(true);
+    public void setPaddingButton() {
+        btnDashboard.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        btnSuratMasuk.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        btnSuratKeluar.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        btnRekap.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        btnInstansi.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        btnKeluar.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
     }
     
     public void exitedPanel(JPanel panel, Color color) {
@@ -179,14 +228,14 @@ public class Dashboard extends javax.swing.JFrame {
         panelMenu = new javax.swing.JPanel();
         sp2 = new javax.swing.JSeparator();
         lblDinas = new javax.swing.JLabel();
-        btnBeranda = new javax.swing.JButton();
+        btnDashboard = new javax.swing.JButton();
         btnSuratMasuk = new javax.swing.JButton();
         btnSuratKeluar = new javax.swing.JButton();
         btnRekap = new javax.swing.JButton();
         btnInstansi = new javax.swing.JButton();
         btnKeluar = new javax.swing.JButton();
         panelMain = new javax.swing.JPanel();
-        panelBeranda = new javax.swing.JPanel();
+        panelDashboard = new javax.swing.JPanel();
         ppPengguna = new javax.swing.JPanel();
         lblTotalPengguna = new javax.swing.JLabel();
         totalPengguna = new javax.swing.JLabel();
@@ -200,21 +249,33 @@ public class Dashboard extends javax.swing.JFrame {
         totalSuratKeluar = new javax.swing.JLabel();
         icSuratKeluar = new javax.swing.JLabel();
         ppStatistik = new javax.swing.JPanel();
+        panelLaporanHarian = new javax.swing.JPanel();
         panelSuratMasuk = new javax.swing.JPanel();
         panelSuratKeluar = new javax.swing.JPanel();
         lblSuratKeluar = new javax.swing.JLabel();
         panelRekap = new javax.swing.JPanel();
         lblBeranda1 = new javax.swing.JLabel();
         panelInstansi = new javax.swing.JPanel();
-        lblBeranda2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        lbInstansi = new javax.swing.JLabel();
+        lbKab = new javax.swing.JLabel();
+        lbTelp = new javax.swing.JLabel();
+        lbEmail = new javax.swing.JLabel();
+        lbAlamat = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Surat Masuk");
         setAlwaysOnTop(true);
         setResizable(false);
 
+        bodyPanel.setBackground(new java.awt.Color(255, 255, 255));
         bodyPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        lblWelcome.setBackground(new java.awt.Color(255, 255, 255));
         lblWelcome.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWelcome.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bg_welcome.png"))); // NOI18N
@@ -238,31 +299,18 @@ public class Dashboard extends javax.swing.JFrame {
         lblDinas.setIconTextGap(10);
         panelMenu.add(lblDinas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 250, 130));
 
-        btnBeranda.setBackground(new java.awt.Color(0, 77, 64));
-        btnBeranda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnBeranda.setForeground(new java.awt.Color(255, 255, 255));
-        btnBeranda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/mn_Speedometer_24px.png"))); // NOI18N
-        btnBeranda.setText("Beranda");
-        btnBeranda.setBorder(null);
-        btnBeranda.setBorderPainted(false);
-        btnBeranda.setContentAreaFilled(false);
-        btnBeranda.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnBeranda.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btnBeranda.setIconTextGap(30);
-        btnBeranda.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        btnBeranda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActionSideMenu(evt);
-            }
-        });
-        panelMenu.add(btnBeranda, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 250, 45));
+        btnDashboard.setBackground(new java.awt.Color(0, 77, 64));
+        btnDashboard.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnDashboard.setForeground(new java.awt.Color(255, 255, 255));
+        btnDashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/mn_Speedometer_24px.png"))); // NOI18N
+        btnDashboard.setText("Dashboard");
+        btnDashboard.setBorder(null);
+        btnDashboard.setBorderPainted(false);
+        btnDashboard.setContentAreaFilled(false);
+        btnDashboard.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnDashboard.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnDashboard.setIconTextGap(30);
+        panelMenu.add(btnDashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 250, 45));
 
         btnSuratMasuk.setBackground(new java.awt.Color(0, 77, 64));
         btnSuratMasuk.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -275,19 +323,6 @@ public class Dashboard extends javax.swing.JFrame {
         btnSuratMasuk.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnSuratMasuk.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnSuratMasuk.setIconTextGap(30);
-        btnSuratMasuk.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        btnSuratMasuk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActionSideMenu(evt);
-            }
-        });
         panelMenu.add(btnSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 185, 250, 45));
 
         btnSuratKeluar.setBackground(new java.awt.Color(0, 77, 64));
@@ -301,19 +336,6 @@ public class Dashboard extends javax.swing.JFrame {
         btnSuratKeluar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnSuratKeluar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnSuratKeluar.setIconTextGap(30);
-        btnSuratKeluar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        btnSuratKeluar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActionSideMenu(evt);
-            }
-        });
         panelMenu.add(btnSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 250, 45));
 
         btnRekap.setBackground(new java.awt.Color(0, 77, 64));
@@ -327,19 +349,6 @@ public class Dashboard extends javax.swing.JFrame {
         btnRekap.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRekap.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnRekap.setIconTextGap(30);
-        btnRekap.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        btnRekap.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActionSideMenu(evt);
-            }
-        });
         panelMenu.add(btnRekap, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 275, 250, 45));
 
         btnInstansi.setBackground(new java.awt.Color(0, 77, 64));
@@ -353,19 +362,6 @@ public class Dashboard extends javax.swing.JFrame {
         btnInstansi.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnInstansi.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnInstansi.setIconTextGap(30);
-        btnInstansi.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        btnInstansi.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActionSideMenu(evt);
-            }
-        });
         panelMenu.add(btnInstansi, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 320, 250, 45));
 
         btnKeluar.setBackground(new java.awt.Color(0, 77, 64));
@@ -379,38 +375,18 @@ public class Dashboard extends javax.swing.JFrame {
         btnKeluar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnKeluar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnKeluar.setIconTextGap(30);
-        btnKeluar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
-        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActionSideMenu(evt);
-            }
-        });
         panelMenu.add(btnKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 505, 250, 45));
 
         bodyPanel.add(panelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 250, 550));
 
         panelMain.setLayout(new java.awt.CardLayout());
 
-        panelBeranda.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelDashboard.setBackground(new java.awt.Color(255, 255, 255));
+        panelDashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         ppPengguna.setBackground(new java.awt.Color(244, 143, 177));
         ppPengguna.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED, java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppPengguna.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        ppPengguna.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
         ppPengguna.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTotalPengguna.setBackground(new java.awt.Color(255, 255, 255));
@@ -437,19 +413,11 @@ public class Dashboard extends javax.swing.JFrame {
         icPengguna.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         ppPengguna.add(icPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 0, 100, 100));
 
-        panelBeranda.add(ppPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 236, 100));
+        panelDashboard.add(ppPengguna, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 236, 100));
 
-        ppSMasuk.setBackground(new java.awt.Color(206, 147, 216));
+        ppSMasuk.setBackground(new java.awt.Color(255, 204, 128));
         ppSMasuk.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppSMasuk.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        ppSMasuk.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
         ppSMasuk.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTotalSuratMasuk.setBackground(new java.awt.Color(255, 255, 255));
@@ -476,19 +444,11 @@ public class Dashboard extends javax.swing.JFrame {
         icSuratMasuk.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         ppSMasuk.add(icSuratMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 0, 100, 100));
 
-        panelBeranda.add(ppSMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(247, 0, 236, 100));
+        panelDashboard.add(ppSMasuk, new org.netbeans.lib.awtextra.AbsoluteConstraints(247, 0, 236, 100));
 
-        ppSKeluar.setBackground(new java.awt.Color(179, 157, 219));
+        ppSKeluar.setBackground(new java.awt.Color(188, 170, 164));
         ppSKeluar.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.lightGray, java.awt.Color.lightGray));
         ppSKeluar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        ppSKeluar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnExited(evt);
-            }
-        });
         ppSKeluar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTotalSuratKeluar.setBackground(new java.awt.Color(255, 255, 255));
@@ -515,35 +475,35 @@ public class Dashboard extends javax.swing.JFrame {
         icSuratKeluar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         ppSKeluar.add(icSuratKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 0, 100, 100));
 
-        panelBeranda.add(ppSKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(494, 0, 236, 100));
+        panelDashboard.add(ppSKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(494, 0, 236, 100));
 
-        javax.swing.GroupLayout ppStatistikLayout = new javax.swing.GroupLayout(ppStatistik);
-        ppStatistik.setLayout(ppStatistikLayout);
-        ppStatistikLayout.setHorizontalGroup(
-            ppStatistikLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        ppStatistik.setBackground(new java.awt.Color(255, 255, 255));
+        ppStatistik.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        panelLaporanHarian.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout panelLaporanHarianLayout = new javax.swing.GroupLayout(panelLaporanHarian);
+        panelLaporanHarian.setLayout(panelLaporanHarianLayout);
+        panelLaporanHarianLayout.setHorizontalGroup(
+            panelLaporanHarianLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 730, Short.MAX_VALUE)
         );
-        ppStatistikLayout.setVerticalGroup(
-            ppStatistikLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panelLaporanHarianLayout.setVerticalGroup(
+            panelLaporanHarianLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 380, Short.MAX_VALUE)
         );
 
-        panelBeranda.add(ppStatistik, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 730, 380));
+        ppStatistik.add(panelLaporanHarian, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 730, 380));
 
-        panelMain.add(panelBeranda, "card2");
+        panelDashboard.add(ppStatistik, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 730, 380));
 
-        javax.swing.GroupLayout panelSuratMasukLayout = new javax.swing.GroupLayout(panelSuratMasuk);
-        panelSuratMasuk.setLayout(panelSuratMasukLayout);
-        panelSuratMasukLayout.setHorizontalGroup(
-            panelSuratMasukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 730, Short.MAX_VALUE)
-        );
-        panelSuratMasukLayout.setVerticalGroup(
-            panelSuratMasukLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 490, Short.MAX_VALUE)
-        );
+        panelMain.add(panelDashboard, "card2");
 
+        panelSuratMasuk.setBackground(new java.awt.Color(255, 255, 255));
+        panelSuratMasuk.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         panelMain.add(panelSuratMasuk, "card3");
+
+        panelSuratKeluar.setBackground(new java.awt.Color(255, 255, 255));
 
         lblSuratKeluar.setText("Surat Keluar");
 
@@ -570,6 +530,8 @@ public class Dashboard extends javax.swing.JFrame {
 
         panelMain.add(panelSuratKeluar, "card2");
 
+        panelRekap.setBackground(new java.awt.Color(255, 255, 255));
+
         lblBeranda1.setText("Rekap");
 
         javax.swing.GroupLayout panelRekapLayout = new javax.swing.GroupLayout(panelRekap);
@@ -595,24 +557,39 @@ public class Dashboard extends javax.swing.JFrame {
 
         panelMain.add(panelRekap, "card2");
 
-        lblBeranda2.setText("Instansi");
+        panelInstansi.setBackground(new java.awt.Color(255, 255, 255));
+        panelInstansi.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout panelInstansiLayout = new javax.swing.GroupLayout(panelInstansi);
-        panelInstansi.setLayout(panelInstansiLayout);
-        panelInstansiLayout.setHorizontalGroup(
-            panelInstansiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelInstansiLayout.createSequentialGroup()
-                .addGap(0, 346, Short.MAX_VALUE)
-                .addComponent(lblBeranda2)
-                .addGap(0, 346, Short.MAX_VALUE))
-        );
-        panelInstansiLayout.setVerticalGroup(
-            panelInstansiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelInstansiLayout.createSequentialGroup()
-                .addGap(0, 238, Short.MAX_VALUE)
-                .addComponent(lblBeranda2)
-                .addGap(0, 238, Short.MAX_VALUE))
-        );
+        jLabel1.setText("Instansi");
+        panelInstansi.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 100, 20));
+
+        jLabel2.setText("Kabupaten");
+        panelInstansi.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 100, 20));
+
+        jLabel3.setText("Telp");
+        panelInstansi.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 100, 20));
+
+        jLabel6.setText("Email");
+        panelInstansi.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 100, 20));
+
+        jLabel4.setText("Alamat");
+        panelInstansi.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 100, 20));
+
+        lbInstansi.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lbInstansi.setText("Instansi");
+        panelInstansi.add(lbInstansi, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 0, 510, 20));
+
+        lbKab.setText("Kabupaten");
+        panelInstansi.add(lbKab, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, 510, 20));
+
+        lbTelp.setText("Telp");
+        panelInstansi.add(lbTelp, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 60, 510, 20));
+
+        lbEmail.setText("Email");
+        panelInstansi.add(lbEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 90, 510, 20));
+
+        lbAlamat.setText("Alamat");
+        panelInstansi.add(lbAlamat, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 120, 510, 20));
 
         panelMain.add(panelInstansi, "card2");
 
@@ -632,127 +609,6 @@ public class Dashboard extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEntered
-        if (evt.getSource() == btnBeranda) {
-            enteredBtn(btnBeranda);
-        } else if (evt.getSource() == btnSuratMasuk) {
-            enteredBtn(btnSuratMasuk);
-        } else if (evt.getSource() == btnSuratKeluar) {
-            enteredBtn(btnSuratKeluar);
-        } else if (evt.getSource() == btnRekap) {
-            enteredBtn(btnRekap);
-        } else if (evt.getSource() == btnInstansi) {
-            enteredBtn(btnInstansi);
-        } else if (evt.getSource() == btnKeluar) {
-            enteredBtn(btnKeluar);
-        } else if (evt.getSource() == ppPengguna) {
-            enteredPanel(ppPengguna);
-        } else if (evt.getSource() == ppSKeluar) {
-            enteredPanel(ppSKeluar);
-        } else if (evt.getSource() == ppSMasuk) {
-            enteredPanel(ppSMasuk);
-        }
-    }//GEN-LAST:event_btnEntered
-
-    private void btnExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExited
-        if (evt.getSource() == btnBeranda) {
-            exitedBtn(btnBeranda);
-        } else if (evt.getSource() == btnSuratMasuk) {
-            exitedBtn(btnSuratMasuk);
-        } else if (evt.getSource() == btnSuratKeluar) {
-            exitedBtn(btnSuratKeluar);
-        } else if (evt.getSource() == btnRekap) {
-            exitedBtn(btnRekap);
-        } else if (evt.getSource() == btnInstansi) {
-            exitedBtn(btnInstansi);
-        } else if (evt.getSource() == btnKeluar) {
-            exitedBtn(btnKeluar);
-        } else if (evt.getSource() == ppPengguna) {
-            exitedPanel(ppPengguna, ctPengguna);
-        } else if (evt.getSource() == ppSKeluar) {
-            exitedPanel(ppSKeluar, ctKeluar);
-        } else if (evt.getSource() == ppSMasuk) {
-            exitedPanel(ppSMasuk, ctMasuk);
-        }
-    }//GEN-LAST:event_btnExited
-
-    private void btnActionSideMenu(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActionSideMenu
-        if (evt.getSource() == btnBeranda) {
-            
-            // remove panel
-            panelMain.removeAll();
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-            // add panel
-            panelMain.add(panelBeranda);
-            panelMain.repaint();
-            panelMain.revalidate();
-            setTitle("Beranda");
-            
-        } else if (evt.getSource() == btnSuratMasuk) {
-            
-            // remove panel
-            panelMain.removeAll();
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-            // add panel
-            panelMain.add(panelSuratMasuk);
-            panelMain.repaint();
-            panelMain.revalidate();
-            setTitle("Surat Masuk");
-            
-        } else if (evt.getSource() == btnSuratKeluar) {
-            
-            // remove panel
-            panelMain.removeAll();
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-            // add panel
-            panelMain.add(panelSuratKeluar);
-            panelMain.repaint();
-            panelMain.revalidate();
-            setTitle("Surat Keluar");
-            
-        } else if (evt.getSource() == btnRekap) {
-            
-            // remove panel
-            panelMain.removeAll();
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-            // add panel
-            panelMain.add(panelRekap);
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-        } else if (evt.getSource() == btnInstansi) {
-            
-            // remove panel
-            panelMain.removeAll();
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-            // add panel
-            panelMain.add(panelInstansi);
-            panelMain.repaint();
-            panelMain.revalidate();
-            
-        } else if (evt.getSource() == btnKeluar) {
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Keluar dari " + paramNama + "?",
-                "Konfirmasi",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-            if (confirm == JOptionPane.YES_OPTION) {
-                new Masuk().setVisible(true);
-                dispose();
-            }
-        }
-    }//GEN-LAST:event_btnActionSideMenu
 
     /**
      * @param args the command line arguments
@@ -794,7 +650,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bodyPanel;
-    private javax.swing.JButton btnBeranda;
+    private javax.swing.JButton btnDashboard;
     private javax.swing.JButton btnInstansi;
     private javax.swing.JButton btnKeluar;
     private javax.swing.JButton btnRekap;
@@ -803,16 +659,26 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel icPengguna;
     private javax.swing.JLabel icSuratKeluar;
     private javax.swing.JLabel icSuratMasuk;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel lbAlamat;
+    private javax.swing.JLabel lbEmail;
+    private javax.swing.JLabel lbInstansi;
+    private javax.swing.JLabel lbKab;
+    private javax.swing.JLabel lbTelp;
     private javax.swing.JLabel lblBeranda1;
-    private javax.swing.JLabel lblBeranda2;
     private javax.swing.JLabel lblDinas;
     private javax.swing.JLabel lblSuratKeluar;
     private javax.swing.JLabel lblTotalPengguna;
     private javax.swing.JLabel lblTotalSuratKeluar;
     private javax.swing.JLabel lblTotalSuratMasuk;
     private javax.swing.JLabel lblWelcome;
-    private javax.swing.JPanel panelBeranda;
+    private javax.swing.JPanel panelDashboard;
     private javax.swing.JPanel panelInstansi;
+    private javax.swing.JPanel panelLaporanHarian;
     private javax.swing.JPanel panelMain;
     private javax.swing.JPanel panelMenu;
     private javax.swing.JPanel panelRekap;
@@ -828,4 +694,129 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel totalSuratMasuk;
     // End of variables declaration//GEN-END:variables
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getSource() == btnDashboard) {
+            
+            // remove panel
+            panelMain.removeAll();
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+            // add panel
+            panelMain.add(panelDashboard);
+            panelMain.repaint();
+            panelMain.revalidate();
+            setTitle("Beranda");
+            
+        } else if (e.getSource() == btnSuratMasuk) {
+            
+            // remove panel
+            panelMain.removeAll();
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+            // add panel
+            panelMain.add(panelSuratMasuk);
+            panelMain.repaint();
+            panelMain.revalidate();
+            setTitle("Surat Masuk");
+            
+        } else if (e.getSource() == btnSuratKeluar) {
+            
+            // remove panel
+            panelMain.removeAll();
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+            // add panel
+            panelMain.add(panelSuratKeluar);
+            panelMain.repaint();
+            panelMain.revalidate();
+            setTitle("Surat Keluar");
+            
+        } else if (e.getSource() == btnRekap) {
+            
+            // remove panel
+            panelMain.removeAll();
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+            // add panel
+            panelMain.add(panelRekap);
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+        } else if (e.getSource() == btnInstansi) {
+            
+            // remove panel
+            panelMain.removeAll();
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+            // add panel
+            panelMain.add(panelInstansi);
+            panelMain.repaint();
+            panelMain.revalidate();
+            
+        } else if (e.getSource() == btnKeluar) {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Keluar dari " + paramNama + "?",
+                "Konfirmasi",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+            if (confirm == JOptionPane.YES_OPTION) {
+                new Masuk().setVisible(true);
+                dispose();
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        JComponent c = (JComponent) e.getComponent();
+        String bahan = String.valueOf(c);
+        String tanda = "[";
+        int tipe = bahan.indexOf(tanda);
+        String hasil = bahan.substring(13, tipe).trim();
+        
+        if (hasil.equals("Panel")) {
+            JPanel pnl = (JPanel) e.getSource();
+            pnl.setBackground(new java.awt.Color(128, 203, 196));
+            pnl.setOpaque(true);
+        } else if (hasil.equals("Button")) {
+            JButton btn = (JButton) e.getSource();
+            btn.setBackground(new java.awt.Color(0,150,136));
+            btn.setOpaque(true);
+        }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        JComponent c = (JComponent) e.getComponent();
+        String bahan = String.valueOf(c);
+        String tanda = "[";
+        int tipe = bahan.indexOf(tanda);
+        String hasil = bahan.substring(13, tipe).trim();
+        
+        if (hasil.equals("Panel")) {
+             if (e.getSource() == ppPengguna) {
+                    exitedPanel(ppPengguna, ctPengguna);
+                } else if (e.getSource() == ppSKeluar) {
+                    exitedPanel(ppSKeluar, ctKeluar);
+                } else if (e.getSource() == ppSMasuk) {
+                    exitedPanel(ppSMasuk, ctMasuk);
+                }
+        } else if (hasil.equals("Button")) {
+            JButton btn = (JButton) e.getSource();
+            btn.setBackground(new java.awt.Color(0,77,64));
+            btn.setOpaque(true);
+        }
+    }
 }

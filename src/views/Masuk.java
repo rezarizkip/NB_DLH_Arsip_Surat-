@@ -111,6 +111,11 @@ public class Masuk extends javax.swing.JFrame {
         panelBG.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         panelLogo.setBackground(new java.awt.Color(0, 150, 136));
+        panelLogo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                panelLogoMouseEntered(evt);
+            }
+        });
         panelLogo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblSI.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
@@ -255,8 +260,12 @@ public class Masuk extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Masuk.class.getName()).log(Level.SEVERE, null, ex);
         }
-                
     }//GEN-LAST:event_btnMasukActionPerformed
+
+    private void panelLogoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelLogoMouseEntered
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_panelLogoMouseEntered
 
     /**
      * @param args the command line arguments
